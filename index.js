@@ -1,87 +1,71 @@
+/* eslint-disable space-unary-ops */
+/* eslint-disable object-shorthand */
 import express, { json } from 'express'
 import cors from 'cors'
+import connectDB from './mongo.js'
+import { Note } from './models/Note.js'
 const app = express()
+
+connectDB()
 
 app.use(cors())
 app.use(json())
 
-let notes = [
-  {
-    id: 1,
-    content: 'Me tengo que suscribir a @midudev en YouTube',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true
-  },
-  {
-    id: 2,
-    content: 'Tengo que estudiar las clases del FullStack Bootcamp',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false
-  },
-  {
-    id: 3,
-    content: 'Repasar los retos de JS de midudev',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true
-  }
-]
+let notes = []
 
-const generateId = () => {
-  const notesIds = notes.map(n => n.id)
-  const maxId = notesIds.length ? Math.max(...notesIds) : 0
-  const newId = maxId + 1
-  return newId
-}
-
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+app.get('/', (req, res) => {
+  res.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/notes', (request, response) => {
-  response.json(notes)
+app.get('/api/notes', async (req, res) => {
+  const notes = await Note.find({})
+  return res.json(notes)
 })
 
-app.get('/api/notes/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const note = notes.find(note => note.id === id)
+app.get('/api/notes/:id', async (req, res) => {
+  const id = req.params.id
 
-  if (note) {
-    return response.json(note)
-  } else {
-    response.status(404).end()
+  try {
+    const note = await Note.findById(id)
+
+    if (note) {
+      return res.json(note)
+    } else {
+      res.status(404).end()
+    }
+  } catch (error) {
+    console.log(error)
   }
 })
 
-app.delete('/api/notes/:id', (request, response) => {
-  const id = Number(request.params.id)
+app.delete('/api/notes/:id', (req, res) => {
+  const id = Number(req.params.id)
   notes = notes.filter(note => note.id !== id)
 
-  response.status(204).end()
+  res.status(204).end()
 })
 
-app.post('/api/notes', (request, response) => {
-  const note = request.body
+app.post('/api/notes', async (req, res) => {
+  const { content, important } = req.body
 
-  if (!note.content) {
-    return response.status(400).json({
+  if (!content) {
+    return res.status(400).json({
       error: 'required "content" field is missing'
     })
   }
 
-  const newNote = {
-    id: generateId(),
-    content: note.content,
-    // eslint-disable-next-line space-unary-ops
+  const note = new Note({
+    content: content,
     date: new Date().toLocaleString(),
-    import: note.important || false
-  }
+    important: important || false
+  })
 
-  notes = notes.concat(newNote)
+  const newNote = await note.save()
 
-  response.json(note)
+  res.json(newNote)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
