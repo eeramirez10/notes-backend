@@ -1,7 +1,6 @@
 /* eslint-disable space-unary-ops */
 import mongoose from 'mongoose'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
 
 const connectionString = process.env.MONGO_DB_URI
 
@@ -10,7 +9,7 @@ const connectDB = async () => {
     await mongoose.connect(connectionString)
     console.log('connected to databse')
   } catch (error) {
-    console.log('hubo un error')
+    console.log('hubo un error al conectarse a la DB')
   }
 }
 

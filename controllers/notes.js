@@ -1,17 +1,23 @@
+/* eslint-disable lines-between-class-members */
 /* eslint-disable space-unary-ops */
-import { Note } from '../models/Note.js'
 
 export class NoteController {
-  static async getAll (req, res) {
-    const notes = await Note.find({})
-    return res.json(notes)
+  constructor ({ noteModel }) {
+    this.noteModel = noteModel
+  }
+  getAll = async (req, res, next) => {
+    try {
+      const notes = await this.noteModel.getAll()
+      return res.json(notes)
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static async getById (req, res) {
+  getById = async (req, res, next) => {
     const id = req.params.id
-
     try {
-      const note = await Note.findById(id)
+      const note = await this.noteModel.getById({ id })
 
       if (note) {
         return res.json(note)
@@ -19,41 +25,49 @@ export class NoteController {
         res.status(404).end()
       }
     } catch (error) {
-      console.log(error)
+      next(error)
     }
   }
 
-  static async delete (req, res) {
+  delete = async (req, res, next) => {
     const { id } = req.params
-    const note = await Note.findByIdAndDelete(id)
-
-    console.log(note)
-
-    return res.json({
-      msg: 'Nota Eliminada correctamente'
-    })
+    try {
+      const note = await this.noteModel.delete({ id })
+      return res.json({
+        msg: 'Nota Eliminada correctamente',
+        note
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static async create (req, res) {
-    const { content, important } = req.body
-
+  create = async (req, res, next) => {
+    const { content } = req.body
     if (!content) {
       return res.status(400).json({
         error: 'required "content" field is missing'
       })
     }
-
-    const note = new Note({
-      content,
-      date: new Date(),
-      important: important || false
-    })
-
     try {
-      const newNote = await note.save()
+      const newNote = await this.noteModel.create({ input: req.body })
       res.json(newNote)
     } catch (error) {
-      console.log(error)
+      next(error)
+    }
+  }
+
+  update = async (req, res, next) => {
+    const { id } = req.params
+    const { body } = req
+    if (!body.content) {
+      return res.status(400).json({ msg: 'required "content" field is missing' })
+    }
+    try {
+      const note = await this.noteModel.update({ id, input: body })
+      return res.status(202).json({ msg: 'Actualizado correctamente', note })
+    } catch (error) {
+      next(error)
     }
   }
 }

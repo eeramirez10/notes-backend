@@ -1,11 +1,8 @@
-### Test Server
-GET http://localhost:3001
-
 ### Get all notes
 GET http://localhost:3001/api/notes
 
 ### Get one note
-GET http://localhost:3001/api/notes/653ae7d3e7408f3828916eb1
+GET http://localhost:3001/api/notes/653afacaffd6945990c6ea2b
 
 ### Create note
 POST http://localhost:3001/api/notes
@@ -17,4 +14,12 @@ Content-Type: application/json
 }
 
 ### Delete one note
-DELETE http://localhost:3001/api/notes/653afab8c9e225f3794545dc
+DELETE http://localhost:3001/api/notes/653c16f6ba276a13f4af4146
+
+### Update note
+PATCH http://localhost:3001/api/notes/653afacaffd6945990c6ea2b
+Content-Type: application/json
+
+{
+  "content": "Prueda de contenido 3"
+}
