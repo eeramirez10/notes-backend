@@ -1,4 +1,4 @@
 import { createApp } from './index.js'
 import { NoteModel } from './models/mongo/Note.js'
 
-createApp({ noteModel: NoteModel })
+export const appMongo = createApp({ noteModel: NoteModel })

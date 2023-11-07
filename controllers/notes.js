@@ -1,6 +1,8 @@
 /* eslint-disable lines-between-class-members */
 /* eslint-disable space-unary-ops */
 
+import { UserModel } from '../models/mongo/User.js'
+
 export class NoteController {
   constructor ({ noteModel }) {
     this.noteModel = noteModel
@@ -19,11 +21,10 @@ export class NoteController {
     try {
       const note = await this.noteModel.getById({ id })
 
-      if (note) {
-        return res.json(note)
-      } else {
+      if (!note) {
         res.status(404).end()
       }
+      return res.json(note)
     } catch (error) {
       next(error)
     }
@@ -43,15 +44,29 @@ export class NoteController {
   }
 
   create = async (req, res, next) => {
-    const { content } = req.body
-    if (!content) {
-      return res.status(400).json({
-        error: 'required "content" field is missing'
-      })
-    }
+    const { content, important = false } = req.body
+    const { userId } = req
+
     try {
-      const newNote = await this.noteModel.create({ input: req.body })
-      res.json(newNote)
+      const user = await UserModel.findById({ id: userId })
+
+      if (!content) {
+        return res.status(400).json({
+          error: 'required "content" field is missing'
+        })
+      }
+
+      const newNote = {
+        content,
+        important,
+        user: user.id
+      }
+
+      const note = await this.noteModel.create({ input: newNote })
+      user.notes = user.notes.concat(note.id)
+      await user.save()
+
+      return res.json(note)
     } catch (error) {
       next(error)
     }

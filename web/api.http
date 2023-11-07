@@ -2,14 +2,15 @@
 GET http://localhost:3001/api/notes
 
 ### Get one note
-GET http://localhost:3001/api/notes/653afacaffd6945990c6ea2b
+GET http://localhost:3001/api/notes/653b39c9721dd913f2da5766
 
 ### Create note
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NDU3ODcxYWZiNGIwNDZiY2Q0Zjg2MCIsInVzZXJuYW1lIjoiemFkcXVpZWxfMDYiLCJpYXQiOjE2OTkzMDM2NzN9.Ua1bapdIJqLp00uGQe68g3h80gTJcgni7m94PuvA9Xc
 
 {
-  "content": "Suscríbete a @midudev",
+  "content": "Pruba de content 10",
   "important": true
 }
 
@@ -17,7 +18,7 @@ Content-Type: application/json
 DELETE http://localhost:3001/api/notes/653c16f6ba276a13f4af4146
 
 ### Update note
-PATCH http://localhost:3001/api/notes/653afacaffd6945990c6ea2b
+PATCH http://localhost:3001/api/notes/65457884afb4b046bcd4f865
 Content-Type: application/json
 
 {

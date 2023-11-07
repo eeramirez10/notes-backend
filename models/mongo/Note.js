@@ -6,7 +6,7 @@ export const Note = model('Note', noteSchema)
 
 export class NoteModel {
   static async getAll () {
-    return await Note.find({})
+    return await Note.find({}).populate('user', { notes: 0 })
   }
 
   static async getById ({ id }) {
@@ -21,7 +21,8 @@ export class NoteModel {
     const newNote = new Note({
       content: input.content,
       date: new Date(),
-      important: input.important || false
+      important: input.important || false,
+      user: input.user
     })
     const note = await newNote.save()
     return note

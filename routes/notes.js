@@ -1,6 +1,7 @@
 /* eslint-disable space-unary-ops */
 import { Router } from 'express'
 import { NoteController } from '../controllers/notes.js'
+import { validateToken } from '../middelewares/validateToken.js'
 
 export const createNotesRouter = ({ noteModel }) => {
   const noteController = new NoteController({ noteModel })
@@ -12,7 +13,7 @@ export const createNotesRouter = ({ noteModel }) => {
 
   notesRouter.delete('/:id', noteController.delete)
 
-  notesRouter.post('/', noteController.create)
+  notesRouter.post('/', validateToken, noteController.create)
 
   notesRouter.patch('/:id', noteController.update)
 
